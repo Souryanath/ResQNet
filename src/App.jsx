@@ -155,7 +155,7 @@ function AppContent() {
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
           setIncidents(data);
-          localStorage.setItem('crisisSyncIncidents', JSON.stringify(data));
+          localStorage.setItem('resqnetIncidents', JSON.stringify(data));
         }
       })
       .catch(err => console.error('Failed to fetch incidents:', err));
@@ -166,12 +166,12 @@ function AppContent() {
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
           setAllProfiles(data);
-          localStorage.setItem('crisisSyncAllProfiles', JSON.stringify(data));
+          localStorage.setItem('resqnetAllProfiles', JSON.stringify(data));
           
           // Set active profile from server if local is empty
           if (!userProfile.name && data[0]) {
             setUserProfile(data[0]);
-            localStorage.setItem('crisisSyncProfile', JSON.stringify(data[0]));
+            localStorage.setItem('resqnetProfile', JSON.stringify(data[0]));
           }
         }
       })

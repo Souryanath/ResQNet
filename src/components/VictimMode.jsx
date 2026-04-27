@@ -299,8 +299,9 @@ export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentS
         const prompt = `You are ResQNet AI, a real-time emergency response assistant. A user reported a ${emergencyContext}. Details: "${description || 'No details provided'}". ${profileContext} Provide exactly 3 short, calm, actionable survival instructions specific to this emergency type. Keep under 50 words. No markdown.`;
 
         // Backend Proxy Call
-        const res = await fetch('/api/gemini', {
+        const response = await fetch('/api/gemini', {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt }),
         });
 
@@ -319,14 +320,14 @@ export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentS
         if (isMounted) {
           setDynamicInstructions(responseText);
           // Save to offline cache
-          localStorage.setItem(`crisisSync_ai_${category}`, responseText);
+          localStorage.setItem(`resqnet_ai_${category}`, responseText);
           setAiAnalyzing(false);
         }
       } catch (error) {
         console.error("Gemini API Error:", error);
         if (isMounted) {
           // Offline / Fallback Cache
-          const cachedInstructions = localStorage.getItem(`crisisSync_ai_${category}`);
+          const cachedInstructions = localStorage.getItem(`resqnet_ai_${category}`);
           if (cachedInstructions && !navigator.onLine) {
             setDynamicInstructions(`(Offline Mode) ${cachedInstructions}`);
           } else {

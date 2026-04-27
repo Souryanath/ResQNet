@@ -78,7 +78,7 @@ export default function AIAssistant() {
   const [activePack, setActivePack] = useState(null);
   const [translatedPack, setTranslatedPack] = useState(null);
   const [translating, setTranslating] = useState(false);
-  const [messages, setMessages] = useState([{ role:'ai', text:'Welcome to CrisisSync AI. I provide real-time, language-aware emergency instructions powered by Gemini AI.\n\nDescribe your emergency or choose a scenario from the right panel.' }]);
+  const [messages, setMessages] = useState([{ role:'ai', text:'Welcome to ResQNet AI. I provide real-time, language-aware emergency instructions powered by Gemini AI.\n\nDescribe your emergency or choose a scenario from the right panel.' }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const chatEnd = useRef(null);
@@ -128,11 +128,14 @@ export default function AIAssistant() {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ prompt: `You are ResQNet AI, an emergency response assistant. The user describes an emergency situation. Provide clear, numbered, actionable first-aid or safety instructions. Be concise (max 6 steps).${langNote}\n\nUser: ${userMsg}` })
       });
-      if (!res.ok) throw new Error('API error');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'API error');
+      }
       const data = await res.json();
       setMessages(prev => [...prev, { role:'ai', text: data.text }]);
-    } catch {
-      setMessages(prev => [...prev, { role:'ai', text: '⚠️ Could not reach Gemini AI. Try an offline pack from the sidebar instead.' }]);
+    } catch (err) {
+      setMessages(prev => [...prev, { role:'ai', text: `⚠️ ${err.message || 'Could not reach Gemini AI'}. Try an offline pack from the sidebar instead.` }]);
     }
     setLoading(false);
   };

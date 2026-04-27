@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ══════════════════════════════════════════
+   CrisisSync AI – CrisisLink Design System
+   ══════════════════════════════════════════ */
+
+:root {
+  --red: #E63946;
+  --red-dark: #b02530;
+  --night: #0a0c10;
+  --night2: #111420;
+  --night3: #181c27;
+  --card: #151820;
+  --card2: #1c2030;
+  --border: rgba(255,255,255,0.07);
+  --border-accent: rgba(230,57,70,0.35);
+  --text: #f0f2f5;
+  --muted: #8a90a0;
+  --muted2: #5a6070;
+  --green: #2ecc71;
+  --amber: #f39c12;
+  --blue: #3498db;
+  --font-head: 'Syne', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-[#0a0c10] text-[#f0f2f5];
+    font-family: var(--font-body);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+}
+
+/* ── Typography Overrides ── */
+h1, h2, h3, h4, h5, h6,
+.font-head {
+  font-family: var(--font-head);
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+/* ── Animations ── */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-out-right {
+  to { opacity: 0; transform: translateX(24px); }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(230,57,70,0.55); }
+  70%  { box-shadow: 0 0 0 14px rgba(230,57,70,0); }
+  100% { box-shadow: 0 0 0 0 rgba(230,57,70,0); }
+}
+@keyframes notif-bar {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+@keyframes dot-pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: .35; transform: scale(.65); }
+}
+@keyframes typing-bounce {
+  0%,80%,100% { transform: translateY(0); }
+  40%         { transform: translateY(-5px); }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right .4s cubic-bezier(.22,1,.36,1) both;
+}
+.animate-slide-out-right {
+  animation: slide-out-right .3s ease forwards;
+}
+.animate-slide-up {
+  animation: slide-up .4s cubic-bezier(.22,1,.36,1) both;
+}
+.animate-fade-in {
+  animation: fade-in .3s ease both;
+}
+.animate-modal-in {
+  animation: modal-in .3s ease both;
+}
+.animate-pulse-ring {
+  animation: pulse-ring 1.5s infinite;
+}
+.animate-dot-pulse {
+  animation: dot-pulse 2s infinite;
+}
+
+/* ── Notification Toast Progress Bar ── */
+.notif-bar {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+  margin-top: .5rem;
+}
+.notif-fill {
+  height: 100%;
+  border-radius: 1px;
+  animation: notif-bar linear forwards;
+}
+
+/* ── Hero Grid Background ── */
+.hero-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+  background-size: 55px 55px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+}
+
+/* ── Hero Glow ── */
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 55% 45% at 50% 0%, rgba(230,57,70,.13) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Feature Cards ── */
+.feature-card {
+  position: relative;
+  overflow: hidden;
+  transition: all .2s;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s;
+}
+.feature-card:hover {
+  border-color: var(--border-accent) !important;
+  transform: translateY(-2px);
+}
+.feature-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* ── CTA Glow ── */
+.cta-glow {
+  position: relative;
+  overflow: hidden;
+}
+.cta-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(230,57,70,.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Leaflet Map Overrides (Dark Mode) ── */
+.leaflet-container {
+  background: var(--night3) !important;
+}
+.custom-leaflet-icon {
+  background: none !important;
+  border: none !important;
+}
+.custom-heatmap-icon {
+  background: none !important;
+  border: none !important;
+}
+
+/* ── Hazard Cards ── */
+.hazard-card {
+  border-radius: 11px;
+  padding: 1.6rem 1.2rem;
+  border: 1px solid transparent;
+  text-align: center;
+  transition: transform .2s;
+}
+.hazard-card:hover {
+  transform: translateY(-3px);
+}

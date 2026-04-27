@@ -179,6 +179,23 @@ function AppContent() {
   }, []);
 
   // Save incidents to database and localStorage
+  const handleDeleteProfile = async () => {
+    try {
+      await fetch('/api/profiles', { method: 'DELETE' });
+      const emptyProfile = {
+        name: '', age: '', bloodType: '', docType: 'Aadhar', docId: '', medicalConditions: '', preferredHospital: '', preferredDoctor: '', emergencyContactName: '', emergencyContactPhone: '', shareLiveLocation: true
+      };
+      setUserProfile(emptyProfile);
+      localStorage.removeItem('crisisSyncProfile');
+      localStorage.removeItem('resqnetProfile');
+      setShowProfileModal(false);
+      addToast('Profile Deleted', 'Your profile information has been removed.', 'info');
+    } catch (err) {
+      console.error('Delete error:', err);
+      addToast('Error', 'Failed to delete profile from database.', 'error');
+    }
+  };
+
   const syncIncidentToDatabase = async (incidentData) => {
     try {
       const isExisting = incidents.some(inc => inc.id === incidentData.id);
@@ -347,7 +364,7 @@ function AppContent() {
             <span className="hidden">🆘</span>
           </div>
           <span className="font-head text-[1.2rem] font-extrabold tracking-tight text-white">
-            ResQNet <span className="text-crisis">AI</span>
+            ResQNet
           </span>
         </div>
         
@@ -459,6 +476,7 @@ function AppContent() {
             userProfile={userProfile}
             onUpdateProfile={handleUpdateProfile}
             onCancel={() => setCitizenTab('sos')}
+            onDeleteProfile={handleDeleteProfile}
           />
         )}
         {portalMode === 'ai-assistant' && (

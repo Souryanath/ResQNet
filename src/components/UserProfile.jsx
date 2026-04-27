@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, X, CheckCircle2, Save } from 'lucide-react';
+import { User, X, CheckCircle2, Save, Trash2 } from 'lucide-react';
 
 const TABS = ['Basic Info', 'ID Verification', 'Medical Records', 'Preferred Care', 'Emergency Contacts', 'Settings'];
 
@@ -24,7 +24,7 @@ const defaultProfile = {
   autoDialAttempts: 3, autoDialSeconds: 30,
 };
 
-export default function UserProfile({ userProfile, onUpdateProfile, onCancel }) {
+export default function UserProfile({ userProfile, onUpdateProfile, onCancel, onDeleteProfile }) {
   const [activeTab, setActiveTab] = useState(0);
   const [form, setForm] = useState({ ...defaultProfile, ...userProfile });
   const [savedMsg, setSavedMsg] = useState(false);
@@ -32,6 +32,12 @@ export default function UserProfile({ userProfile, onUpdateProfile, onCancel }) 
   useEffect(() => {
     setForm(prev => ({ ...defaultProfile, ...userProfile, ...prev }));
   }, [userProfile]);
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to PERMANENTLY delete your profile? This action cannot be undone.')) {
+      onDeleteProfile();
+    }
+  };
 
   const set = (field, val) => setForm(prev => ({ ...prev, [field]: val }));
 
@@ -391,6 +397,16 @@ export default function UserProfile({ userProfile, onUpdateProfile, onCancel }) 
               <p className="text-[.75rem] text-[#5a6070] italic">
                 When a crash or fall is detected, the system will ring for the specified duration before sending the SOS automatically. You can cancel during this time.
               </p>
+
+              <div className="pt-6 mt-6 border-t border-[rgba(255,255,255,0.07)]">
+                <h4 className="text-[.75rem] font-bold text-crisis uppercase tracking-widest mb-3">Danger Zone</h4>
+                <button 
+                  onClick={handleDelete}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-[rgba(230,57,70,0.3)] text-crisis hover:bg-crisis/10 transition-all cursor-pointer font-bold text-[.82rem]"
+                >
+                  <Trash2 size={16} /> Delete Profile Permanently
+                </button>
+              </div>
             </div>
           )}
         </div>

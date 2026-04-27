@@ -94,6 +94,22 @@ app.get('/api/profiles/:userId', async (req, res) => {
   }
 });
 
+// Delete Profile
+app.delete('/api/profiles', async (req, res) => {
+  try {
+    if (MONGO_URI) {
+      await UserProfile.deleteMany({}); // Delete all profiles (for simple demo)
+    } else {
+      const db = JSON.parse(fs.readFileSync(LOCAL_DB_PATH, 'utf-8'));
+      db.profiles = [];
+      fs.writeFileSync(LOCAL_DB_PATH, JSON.stringify(db, null, 2));
+    }
+    res.status(200).json({ message: 'Profile deleted' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete profile' });
+  }
+});
+
 // --- MongoDB Schemas ---
 const incidentSchema = new mongoose.Schema({
   id: String,

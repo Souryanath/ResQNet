@@ -16,7 +16,7 @@ export default function LandingPage({ onNavigate }) {
           
           <h1 className="font-head text-[clamp(2.4rem,5vw,4.2rem)] font-extrabold leading-[1.06] tracking-tight mb-4 max-w-[760px]">
             Every Second Counts.<br/>
-            <span className="text-crisis">ResQNet AI</span> Saves Them.
+            <span className="text-crisis">ResQNet</span> Saves Them.
           </h1>
           
           <p className="text-[var(--muted)] text-base max-w-[520px] leading-relaxed mb-8 font-light">

@@ -147,20 +147,39 @@ function AppContent() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Cross-tab synchronization
+  // Fetch incidents from database on load
+  useEffect(() => {
+    fetch('/api/incidents')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setIncidents(data);
+          localStorage.setItem('crisisSyncIncidents', JSON.stringify(data));
+        }
+      })
+      .catch(err => console.error('Failed to fetch incidents:', err));
+  }, []);
+
+  // Save incidents to database and localStorage
+  const syncIncidentToDatabase = async (incidentData) => {
+    try {
+      const isExisting = incidents.some(inc => inc.id === incidentData.id);
+      const url = isExisting ? `/api/incidents/${incidentData.id}` : '/api/incidents';
+      const method = isExisting ? 'PUT' : 'POST';
+      
+      await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(incidentData)
+      });
+    } catch (err) {
+      console.error('Failed to sync incident to DB:', err);
+    }
+  };
+
   useEffect(() => {
     localStorage.setItem('crisisSyncIncidents', JSON.stringify(incidents));
   }, [incidents]);
-
-  useEffect(() => {
-    const handleStorage = (e) => {
-      if (e.key === 'crisisSyncIncidents' && e.newValue) {
-        setIncidents(JSON.parse(e.newValue));
-      }
-    };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
   
   const [routeData, setRouteData] = useState({ eta: null, distance: null, totalSteps: 0, currentStep: 0 });
   const [toasts, setToasts] = useState([]);
@@ -240,6 +259,7 @@ function AppContent() {
   const handleAddIncident = (incident) => {
     const incidentWithProfile = { ...incident, userProfile, messages: [], timestamp: Date.now() };
     setIncidents(prev => [...prev, incidentWithProfile]);
+    syncIncidentToDatabase(incidentWithProfile);
     addToast('SOS Signal Sent', `${incident.category} emergency reported.`, 'warning');
     if (soundEnabled) playSound('siren');
   };
@@ -250,7 +270,9 @@ function AppContent() {
         if (inc.id === id) {
           const updates = { status: newStatus };
           if (newStatus === 'resolved') updates.resolvedAt = Date.now();
-          return { ...inc, ...updates };
+          const updatedInc = { ...inc, ...updates };
+          syncIncidentToDatabase(updatedInc);
+          return updatedInc;
         }
         return inc;
       })
@@ -268,10 +290,14 @@ function AppContent() {
 
   const handleSendMessage = (id, sender, text) => {
     setIncidents(prev => 
-      prev.map(inc => inc.id === id 
-        ? { ...inc, messages: [...(inc.messages || []), { id: Date.now(), sender, text, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }] }
-        : inc
-      )
+      prev.map(inc => {
+        if (inc.id === id) {
+          const updatedInc = { ...inc, messages: [...(inc.messages || []), { id: Date.now(), sender, text, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }] };
+          syncIncidentToDatabase(updatedInc);
+          return updatedInc;
+        }
+        return inc;
+      })
     );
     if (soundEnabled && sender === 'dispatcher') playSound('chime');
   };

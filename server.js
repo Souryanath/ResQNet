@@ -94,6 +94,22 @@ app.get('/api/profiles/:userId', async (req, res) => {
   }
 });
 
+// --- MongoDB Schemas ---
+const incidentSchema = new mongoose.Schema({
+  id: String,
+  category: String,
+  status: String,
+  timestamp: String,
+  resolvedAt: String,
+  description: String,
+  severity: String,
+  location: Object,
+  userProfile: Object,
+  messages: Array,
+  routeETA: Number
+}, { strict: false });
+const Incident = mongoose.model('Incident', incidentSchema);
+
 // 3. Fetch All Profiles (For Dispatcher Dashboard)
 app.get('/api/profiles', async (req, res) => {
   try {
@@ -102,10 +118,72 @@ app.get('/api/profiles', async (req, res) => {
       return res.status(200).json(profiles);
     } else {
       const db = JSON.parse(fs.readFileSync(LOCAL_DB_PATH, 'utf-8'));
-      return res.status(200).json(db.profiles);
+      return res.status(200).json(db.profiles || []);
     }
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch profiles' });
+  }
+});
+
+// --- Database API Endpoints for Incidents ---
+
+// Fetch All Incidents
+app.get('/api/incidents', async (req, res) => {
+  try {
+    if (MONGO_URI) {
+      const incidents = await Incident.find({});
+      return res.status(200).json(incidents);
+    } else {
+      const db = JSON.parse(fs.readFileSync(LOCAL_DB_PATH, 'utf-8'));
+      return res.status(200).json(db.incidents || []);
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch incidents' });
+  }
+});
+
+// Create New Incident
+app.post('/api/incidents', async (req, res) => {
+  try {
+    const incidentData = req.body;
+    if (MONGO_URI) {
+      const newIncident = new Incident(incidentData);
+      await newIncident.save();
+      return res.status(200).json(newIncident);
+    } else {
+      const db = JSON.parse(fs.readFileSync(LOCAL_DB_PATH, 'utf-8'));
+      if (!db.incidents) db.incidents = [];
+      db.incidents.push(incidentData);
+      fs.writeFileSync(LOCAL_DB_PATH, JSON.stringify(db, null, 2));
+      return res.status(200).json(incidentData);
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create incident' });
+  }
+});
+
+// Update Incident (Status, Messages, etc)
+app.put('/api/incidents/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    if (MONGO_URI) {
+      const updated = await Incident.findOneAndUpdate({ id }, updateData, { new: true });
+      return res.status(200).json(updated);
+    } else {
+      const db = JSON.parse(fs.readFileSync(LOCAL_DB_PATH, 'utf-8'));
+      if (!db.incidents) db.incidents = [];
+      const index = db.incidents.findIndex(inc => inc.id === id);
+      if (index >= 0) {
+        db.incidents[index] = { ...db.incidents[index], ...updateData };
+        fs.writeFileSync(LOCAL_DB_PATH, JSON.stringify(db, null, 2));
+        return res.status(200).json(db.incidents[index]);
+      }
+      return res.status(404).json({ error: 'Incident not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update incident' });
   }
 });
 

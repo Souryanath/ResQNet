@@ -12,7 +12,7 @@ function exportReportPDF(incident) {
 
   const html = `
   <!DOCTYPE html>
-  <html><head><title>CrisisSync Report - ${incident.id}</title>
+  <html><head><title>ResQNet Report - ${incident.id}</title>
   <style>
     body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1a1a2e; line-height: 1.7; }
     .header { text-align: center; border-bottom: 3px solid #E63946; padding-bottom: 20px; margin-bottom: 30px; }
@@ -32,7 +32,7 @@ function exportReportPDF(incident) {
     @media print { body { padding: 20px; } }
   </style></head><body>
   <div class="header">
-    <h1>🆘 CrisisSync AI — Incident Report</h1>
+    <h1>🆘 ResQNet AI — Incident Report</h1>
     <p>Automated Emergency Response Documentation</p>
   </div>
 

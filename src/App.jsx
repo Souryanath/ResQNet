@@ -147,8 +147,9 @@ function AppContent() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Fetch incidents from database on load
+  // Fetch data from database on load
   useEffect(() => {
+    // 1. Fetch Incidents
     fetch('/api/incidents')
       .then(res => res.json())
       .then(data => {
@@ -158,6 +159,23 @@ function AppContent() {
         }
       })
       .catch(err => console.error('Failed to fetch incidents:', err));
+
+    // 2. Fetch Profiles for Cross-Device Sync
+    fetch('/api/profiles')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setAllProfiles(data);
+          localStorage.setItem('crisisSyncAllProfiles', JSON.stringify(data));
+          
+          // Set active profile from server if local is empty
+          if (!userProfile.name && data[0]) {
+            setUserProfile(data[0]);
+            localStorage.setItem('crisisSyncProfile', JSON.stringify(data[0]));
+          }
+        }
+      })
+      .catch(err => console.error('Failed to fetch profiles:', err));
   }, []);
 
   // Save incidents to database and localStorage
@@ -324,11 +342,12 @@ function AppContent() {
           className="flex items-center gap-2.5 cursor-pointer group" 
           onClick={() => setPortalMode('home')}
         >
-          <div className="w-[30px] h-[30px] bg-crisis rounded-[7px] flex items-center justify-center text-[15px] shadow-lg shadow-crisis/20 group-hover:shadow-crisis/40 transition-shadow">
-            🆘
+          <div className="w-[30px] h-[30px] bg-crisis rounded-[7px] overflow-hidden flex items-center justify-center text-[15px] shadow-lg shadow-crisis/20 group-hover:shadow-crisis/40 transition-shadow">
+            <img src="/logo.png" alt="ResQNet Logo" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+            <span className="hidden">🆘</span>
           </div>
           <span className="font-head text-[1.2rem] font-extrabold tracking-tight text-white">
-            CrisisSync <span className="text-crisis">AI</span>
+            ResQNet <span className="text-crisis">AI</span>
           </span>
         </div>
         
@@ -432,12 +451,14 @@ function AppContent() {
             routeCurrentStep={routeData.currentStep}
             darkMode={true}
             addToast={addToast}
+            soundEnabled={soundEnabled}
           />
         )}
         {portalMode === 'citizen' && citizenTab === 'profile' && (
           <UserProfile 
             userProfile={userProfile}
             onUpdateProfile={handleUpdateProfile}
+            onCancel={() => setCitizenTab('sos')}
           />
         )}
         {portalMode === 'ai-assistant' && (

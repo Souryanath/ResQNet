@@ -16,7 +16,7 @@ export default function LandingPage({ onNavigate }) {
           
           <h1 className="font-head text-[clamp(2.4rem,5vw,4.2rem)] font-extrabold leading-[1.06] tracking-tight mb-4 max-w-[760px]">
             Every Second Counts.<br/>
-            <span className="text-crisis">CrisisSync AI</span> Saves Them.
+            <span className="text-crisis">ResQNet AI</span> Saves Them.
           </h1>
           
           <p className="text-[var(--muted)] text-base max-w-[520px] leading-relaxed mb-8 font-light">
@@ -64,7 +64,7 @@ export default function LandingPage({ onNavigate }) {
         <span className="text-[.68rem] font-semibold uppercase tracking-[.1em] text-crisis mb-2 block">Features</span>
         <h2 className="font-head text-[clamp(1.5rem,2.8vw,2.2rem)] font-bold tracking-tight leading-tight mb-2">Built for Every Emergency</h2>
         <p className="text-[var(--muted)] text-[.9rem] max-w-[500px] leading-relaxed font-light mb-8">
-          From auto crash detection to AI-guided first aid, CrisisSync handles it all.
+          From auto crash detection to AI-guided first aid, ResQNet handles it all.
         </p>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(265px,1fr))] gap-4">
           {[
@@ -111,7 +111,7 @@ export default function LandingPage({ onNavigate }) {
       <div className="cta-glow bg-night-2 text-center py-20 px-6">
         <span className="text-[.68rem] font-semibold uppercase tracking-[.1em] text-crisis mb-2 block">Get Started</span>
         <h2 className="font-head text-[clamp(1.5rem,2.8vw,2.2rem)] font-bold tracking-tight leading-tight mb-3">Ready to Save Lives?</h2>
-        <p className="text-[var(--muted)] text-[.9rem] mb-7">Set up your profile and start using CrisisSync AI now.</p>
+        <p className="text-[var(--muted)] text-[.9rem] mb-7">Set up your profile and start using ResQNet AI now.</p>
         <div className="flex gap-3 justify-center flex-wrap relative z-10">
           <button 
             onClick={() => onNavigate('citizen', 'sos')}
@@ -131,9 +131,9 @@ export default function LandingPage({ onNavigate }) {
       {/* ── FOOTER ── */}
       <footer className="bg-night border-t border-[var(--border)] py-6 px-6 flex items-center justify-between flex-wrap gap-3">
         <div className="font-head font-extrabold text-base">
-          Crisis<span className="text-crisis">Sync</span> AI
+          ResQ<span className="text-crisis">Net</span> AI
         </div>
-        <p className="text-[.75rem] text-[var(--muted)]">© 2025 CrisisSync AI · Smart SOS & Emergency Coordination Platform</p>
+        <p className="text-[.75rem] text-[var(--muted)]">© 2025 ResQNet AI · Smart SOS & Emergency Coordination Platform</p>
         <p className="text-[.72rem] text-[var(--muted2)]">Built for India's Urban & Rural Safety</p>
       </footer>
     </div>

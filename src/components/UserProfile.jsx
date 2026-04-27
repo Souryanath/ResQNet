@@ -24,7 +24,7 @@ const defaultProfile = {
   autoDialAttempts: 3, autoDialSeconds: 30,
 };
 
-export default function UserProfile({ userProfile, onUpdateProfile }) {
+export default function UserProfile({ userProfile, onUpdateProfile, onCancel }) {
   const [activeTab, setActiveTab] = useState(0);
   const [form, setForm] = useState({ ...defaultProfile, ...userProfile });
   const [savedMsg, setSavedMsg] = useState(false);
@@ -91,7 +91,7 @@ export default function UserProfile({ userProfile, onUpdateProfile }) {
             My Emergency Profile
           </h3>
           <button 
-            onClick={handleSave}
+            onClick={() => onCancel ? onCancel() : null}
             className="w-8 h-8 rounded-lg bg-[#1c2030] border border-[rgba(255,255,255,0.07)] flex items-center justify-center text-[#8a90a0] hover:text-white hover:border-[rgba(230,57,70,0.35)] transition-all cursor-pointer"
           >
             <X size={16} />
@@ -402,7 +402,7 @@ export default function UserProfile({ userProfile, onUpdateProfile }) {
               <CheckCircle2 size={14} /> Saved successfully
             </span>
           )}
-          <button className="py-2.5 px-5 rounded-lg text-[.82rem] font-medium bg-transparent text-[#8a90a0] border border-[rgba(255,255,255,0.07)] hover:border-[rgba(255,255,255,0.2)] hover:text-white transition-all cursor-pointer font-body">
+          <button onClick={() => onCancel ? onCancel() : null} className="py-2.5 px-5 rounded-lg text-[.82rem] font-medium bg-transparent text-[#8a90a0] border border-[rgba(255,255,255,0.07)] hover:border-[rgba(255,255,255,0.2)] hover:text-white transition-all cursor-pointer font-body">
             Cancel
           </button>
           <button onClick={handleSave} className="py-2.5 px-5 rounded-lg text-[.82rem] font-bold bg-[#E63946] text-white border-none hover:bg-[#b02530] transition-all cursor-pointer font-body flex items-center gap-1.5">

@@ -263,6 +263,6 @@ if (fs.existsSync(distPath)) {
   });
 }
 
-app.listen(port, () => {
-  console.log(`Secure backend running on port ${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`🚀 ResQNet Backend running on port ${port} (0.0.0.0)`);
 });

@@ -21,7 +21,7 @@ function checkGeofence(lat, lng) {
   return null;
 }
 
-export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentStatus, userProfile, onNavigateToProfile, onSendMessage, routeETA, routeDistance, routeTotalSteps, routeCurrentStep, darkMode }) {
+export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentStatus, userProfile, onNavigateToProfile, onSendMessage, routeETA, routeDistance, routeTotalSteps, routeCurrentStep, darkMode, soundEnabled }) {
   // Feature 5: Real-time countdown timer
   const [timeLeft, setTimeLeft] = useState(null);
 
@@ -203,6 +203,7 @@ export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentS
 
   // Feature: Play loud beep after attempt fails
   const playBeep = () => {
+    if (!soundEnabled) return;
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioCtx.createOscillator();
@@ -295,14 +296,11 @@ export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentS
         };
         const emergencyContext = categoryMap[category] || 'general emergency';
         
-        const prompt = `You are CrisisSync AI, a real-time emergency response assistant. A user reported a ${emergencyContext}. Details: "${description || 'No details provided'}". ${profileContext} Provide exactly 3 short, calm, actionable survival instructions specific to this emergency type. Keep under 50 words. No markdown.`;
+        const prompt = `You are ResQNet AI, a real-time emergency response assistant. A user reported a ${emergencyContext}. Details: "${description || 'No details provided'}". ${profileContext} Provide exactly 3 short, calm, actionable survival instructions specific to this emergency type. Keep under 50 words. No markdown.`;
 
-        // Send request to our secure backend proxy
-        const response = await fetch('/api/gemini', {
+        // Backend Proxy Call
+        const res = await fetch('/api/gemini', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({ prompt }),
         });
 
@@ -360,7 +358,7 @@ export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentS
 
         {/* Status Bar Mock */}
         <div className={`h-12 w-full flex justify-between items-center px-6 text-[10px] font-medium z-50 absolute top-0 border-b ${darkMode ? 'bg-slate-900 border-slate-700 text-slate-400' : 'bg-white border-slate-100 text-slate-500'}`}>
-          <span className={`text-xs font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>CrisisSync</span>
+          <span className={`text-xs font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>ResQNet AI</span>
           <button 
             onClick={() => onNavigateToProfile && onNavigateToProfile()}
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors relative ${darkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-100 hover:bg-slate-200'}`}
@@ -449,7 +447,7 @@ export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentS
 
                   <div>
                     <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">Emergency Type</label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       <button
                         onClick={() => setCategory('Road Accident')}
                         className={`py-3 px-2 rounded-2xl flex flex-col items-center gap-1.5 transition-all duration-200 ${category === 'Road Accident' ? 'bg-red-50 text-red-600 border-2 border-red-400 shadow-sm shadow-red-100' : 'bg-white border-2 border-slate-200 text-slate-500 hover:border-slate-300'}`}

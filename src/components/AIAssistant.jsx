@@ -126,7 +126,7 @@ export default function AIAssistant() {
       const langNote = lang !== 'English' ? ` Respond in ${lang}.` : '';
       const res = await fetch('/api/gemini', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ prompt: `You are CrisisSync AI, an emergency response assistant. The user describes an emergency situation. Provide clear, numbered, actionable first-aid or safety instructions. Be concise (max 6 steps).${langNote}\n\nUser: ${userMsg}` })
+        body: JSON.stringify({ prompt: `You are ResQNet AI, an emergency response assistant. The user describes an emergency situation. Provide clear, numbered, actionable first-aid or safety instructions. Be concise (max 6 steps).${langNote}\n\nUser: ${userMsg}` })
       });
       if (!res.ok) throw new Error('API error');
       const data = await res.json();

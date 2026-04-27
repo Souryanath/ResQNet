@@ -315,7 +315,7 @@ export default function DispatcherDashboard({ incidents, onUpdateIncidentStatus,
         </head>
         <body>
           <div class="header">
-            <div class="title">CRISISSYNC - EMERGENCY MEDICAL REPORT</div>
+            <div class="title">RESQNET - EMERGENCY MEDICAL REPORT</div>
             <div class="subtitle">Generated on: ${new Date().toLocaleString()} | Incident ID: ${incident.id}</div>
           </div>
           

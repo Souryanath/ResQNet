@@ -204,66 +204,38 @@ app.put('/api/incidents/:id', async (req, res) => {
 });
 
 // --- Gemini AI Endpoint ---
-
-// Initialize Gemini with the API key from the environment (not exposed to frontend)
 const API_KEY = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 app.post('/api/gemini', async (req, res) => {
   try {
     const { prompt } = req.body;
+    if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
 
-    if (!prompt) {
-      return res.status(400).json({ error: 'Prompt is required' });
+    let text = '';
+    try {
+      // Primary model: gemini-2.5-flash (Stable, high-performance)
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const result = await model.generateContent(prompt);
+      text = (await result.response).text();
+    } catch (flashError) {
+      console.warn('Gemini 2.5 Flash failed, falling back to 3.1 Preview:', flashError.message);
+      // Fallback: gemini-3.1-flash-preview (Next-gen experimental)
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-preview" });
+      const result = await model.generateContent(prompt);
+      text = (await result.response).text();
     }
 
-    const postData = JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }]
-    });
-
-    const options = {
-      hostname: 'generativelanguage.googleapis.com',
-      path: `/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(postData)
-      }
-    };
-
-    const apiReq = https.request(options, (apiRes) => {
-      let data = '';
-
-      apiRes.on('data', (chunk) => {
-        data += chunk;
-      });
-
-      apiRes.on('end', () => {
-        try {
-          const parsedData = JSON.parse(data);
-          
-          if (!apiRes.statusCode || apiRes.statusCode >= 400) {
-            return res.status(apiRes.statusCode || 500).json({ error: parsedData.error?.message || 'Failed to fetch from Gemini API' });
-          }
-
-          const responseText = parsedData.candidates[0].content.parts[0].text;
-          res.json({ text: responseText });
-        } catch (e) {
-          res.status(500).json({ error: 'Failed to parse Google API response' });
-        }
-      });
-    });
-
-    apiReq.on('error', (e) => {
-      console.error('HTTPS request error:', e);
-      res.status(500).json({ error: e.message || 'HTTPS request failed' });
-    });
-
-    apiReq.write(postData);
-    apiReq.end();
-
+    res.json({ text });
   } catch (error) {
-    console.error('Error calling Gemini:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate content' });
+    let errorMessage = error.message || "Unknown error";
+    if (errorMessage.includes("API key not valid")) {
+      errorMessage = "Invalid Gemini API Key. Please check your .env file.";
+    } else if (errorMessage.includes("quota")) {
+      errorMessage = "AI Rate Limit reached. Please wait a moment.";
+    }
+    
+    res.status(500).json({ error: `AI Error: ${errorMessage}` });
   }
 });
 

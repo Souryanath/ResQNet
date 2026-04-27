@@ -1,6 +1,6 @@
 {
-  "name": "CrisisSync AI",
-  "short_name": "CrisisSync",
+  "name": "ResQNet",
+  "short_name": "ResQNet",
   "description": "Next-Gen Emergency Coordination Platform",
   "start_url": "/",
   "display": "standalone",

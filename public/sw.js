@@ -1,4 +1,4 @@
-const CACHE_NAME = 'crisissync-v1';
+const CACHE_NAME = 'resqnet-v1';
 const urlsToCache = [
   '/',
   '/index.html',

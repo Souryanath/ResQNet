@@ -80,7 +80,7 @@ export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentS
       if ((latest.status === 'pending' || latest.status === 'dispatched') && latest.id !== dismissedCrisisId) {
         setActiveCrisisId(latest.id);
         setCategory(latest.category);
-        const cached = localStorage.getItem(`crisisSync_ai_${latest.category}`);
+        const cached = localStorage.getItem(`resqnet_ai_${latest.category}`);
         if (cached) setDynamicInstructions(cached);
       }
     }
@@ -296,7 +296,7 @@ export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentS
         };
         const emergencyContext = categoryMap[category] || 'general emergency';
         
-        const prompt = `You are ResQNet AI, a real-time emergency response assistant. A user reported a ${emergencyContext}. Details: "${description || 'No details provided'}". ${profileContext} Provide exactly 3 short, calm, actionable survival instructions specific to this emergency type. Keep under 50 words. No markdown.`;
+        const prompt = `You are ResQNet, a real-time emergency response assistant. A user reported a ${emergencyContext}. Details: "${description || 'No details provided'}". ${profileContext} Provide exactly 3 short, calm, actionable survival instructions specific to this emergency type. Keep under 50 words. No markdown.`;
 
         // Backend Proxy Call
         const response = await fetch('/api/gemini', {
@@ -359,7 +359,7 @@ export default function VictimMode({ onAddIncident, incidents, onUpdateIncidentS
 
         {/* Status Bar Mock */}
         <div className={`h-12 w-full flex justify-between items-center px-6 text-[10px] font-medium z-50 absolute top-0 border-b ${darkMode ? 'bg-slate-900 border-slate-700 text-slate-400' : 'bg-white border-slate-100 text-slate-500'}`}>
-          <span className={`text-xs font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>ResQNet AI</span>
+          <span className={`text-xs font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>ResQNet</span>
           <button 
             onClick={() => onNavigateToProfile && onNavigateToProfile()}
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors relative ${darkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-100 hover:bg-slate-200'}`}

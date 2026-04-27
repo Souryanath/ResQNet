@@ -398,13 +398,12 @@ export default function UserProfile({ userProfile, onUpdateProfile, onCancel, on
                 When a crash or fall is detected, the system will ring for the specified duration before sending the SOS automatically. You can cancel during this time.
               </p>
 
-              <div className="pt-6 mt-6 border-t border-[rgba(255,255,255,0.07)]">
-                <h4 className="text-[.75rem] font-bold text-crisis uppercase tracking-widest mb-3">Danger Zone</h4>
+              <div className="pt-4">
                 <button 
                   onClick={handleDelete}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-[rgba(230,57,70,0.3)] text-crisis hover:bg-crisis/10 transition-all cursor-pointer font-bold text-[.82rem]"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[rgba(230,57,70,0.1)] border border-[rgba(230,57,70,0.3)] text-[#E63946] hover:bg-[#E63946] hover:text-white transition-all cursor-pointer font-bold text-[.82rem]"
                 >
-                  <Trash2 size={16} /> Delete Profile Permanently
+                  <Trash2 size={16} /> Delete Profile
                 </button>
               </div>
             </div>

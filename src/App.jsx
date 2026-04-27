@@ -5,6 +5,8 @@ import UserProfile from './components/UserProfile';
 import IncidentHistory from './components/IncidentHistory';
 import LandingPage from './components/LandingPage';
 import AIAssistant from './components/AIAssistant';
+import Logo from './components/Logo';
+
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -133,17 +135,17 @@ function AppContent() {
   
   // Feature II: Multi-user profile storage
   const [allProfiles, setAllProfiles] = useState(() => {
-    const saved = localStorage.getItem('crisisSyncAllProfiles');
+    const saved = localStorage.getItem('resqnetAllProfiles');
     return saved ? JSON.parse(saved) : [];
   });
   const [activeProfileIdx, setActiveProfileIdx] = useState(() => {
-    const saved = localStorage.getItem('crisisSyncActiveProfileIdx');
+    const saved = localStorage.getItem('resqnetActiveProfileIdx');
     return saved ? parseInt(saved) : 0;
   });
   const [showProfileSwitcher, setShowProfileSwitcher] = useState(false);
 
   const [incidents, setIncidents] = useState(() => {
-    const saved = localStorage.getItem('crisisSyncIncidents');
+    const saved = localStorage.getItem('resqnetIncidents');
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -181,18 +183,27 @@ function AppContent() {
   // Save incidents to database and localStorage
   const handleDeleteProfile = async () => {
     try {
-      await fetch('/api/profiles', { method: 'DELETE' });
+      const res = await fetch('/api/profiles', { method: 'DELETE' });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Server failed to delete profile');
+      }
+
+      // Clear all local states and storage
       const emptyProfile = {
         name: '', age: '', bloodType: '', docType: 'Aadhar', docId: '', medicalConditions: '', preferredHospital: '', preferredDoctor: '', emergencyContactName: '', emergencyContactPhone: '', shareLiveLocation: true
       };
       setUserProfile(emptyProfile);
-      localStorage.removeItem('crisisSyncProfile');
       localStorage.removeItem('resqnetProfile');
+      localStorage.removeItem('resqnetAllProfiles');
+      localStorage.removeItem('resqnetActiveProfileIdx');
+      localStorage.removeItem('resqnetIncidents');
       setShowProfileModal(false);
       addToast('Profile Deleted', 'Your profile information has been removed.', 'info');
     } catch (err) {
       console.error('Delete error:', err);
-      addToast('Error', 'Failed to delete profile from database.', 'error');
+      addToast('Error', err.message || 'Failed to delete profile from database.', 'error');
     }
   };
 
@@ -213,7 +224,7 @@ function AppContent() {
   };
 
   useEffect(() => {
-    localStorage.setItem('crisisSyncIncidents', JSON.stringify(incidents));
+    localStorage.setItem('resqnetIncidents', JSON.stringify(incidents));
   }, [incidents]);
   
   const [routeData, setRouteData] = useState({ eta: null, distance: null, totalSteps: 0, currentStep: 0 });
@@ -227,13 +238,13 @@ function AppContent() {
   const dismissToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
 
   const [userProfile, setUserProfile] = useState(() => {
-    const profiles = localStorage.getItem('crisisSyncAllProfiles');
+    const profiles = localStorage.getItem('resqnetAllProfiles');
     if (profiles) {
       const parsed = JSON.parse(profiles);
-      const idx = parseInt(localStorage.getItem('crisisSyncActiveProfileIdx') || '0');
+      const idx = parseInt(localStorage.getItem('resqnetActiveProfileIdx') || '0');
       return parsed[idx] || { name: '', age: '', bloodType: '', docType: 'Aadhar', docId: '', medicalConditions: '', preferredHospital: '', preferredDoctor: '', emergencyContactName: '', emergencyContactPhone: '', shareLiveLocation: true };
     }
-    const saved = localStorage.getItem('crisisSyncProfile');
+    const saved = localStorage.getItem('resqnetProfile');
     return saved ? JSON.parse(saved) : {
       name: '', age: '', bloodType: '', docType: 'Aadhar', docId: '',
       medicalConditions: '', preferredHospital: '', preferredDoctor: '',
@@ -244,7 +255,7 @@ function AppContent() {
 
   const handleUpdateProfile = async (newProfile) => {
     setUserProfile(newProfile);
-    localStorage.setItem('crisisSyncProfile', JSON.stringify(newProfile));
+    localStorage.setItem('resqnetProfile', JSON.stringify(newProfile));
     // Save to multi-profile store
     const profiles = [...allProfiles];
     if (profiles.length === 0) {
@@ -253,7 +264,7 @@ function AppContent() {
       profiles[activeProfileIdx] = newProfile;
     }
     setAllProfiles(profiles);
-    localStorage.setItem('crisisSyncAllProfiles', JSON.stringify(profiles));
+    localStorage.setItem('resqnetAllProfiles', JSON.stringify(profiles));
 
     // Sync with Backend Developer Database
     try {
@@ -278,16 +289,16 @@ function AppContent() {
     setAllProfiles(profiles);
     setActiveProfileIdx(profiles.length - 1);
     setUserProfile(newP);
-    localStorage.setItem('crisisSyncAllProfiles', JSON.stringify(profiles));
-    localStorage.setItem('crisisSyncActiveProfileIdx', String(profiles.length - 1));
+    localStorage.setItem('resqnetAllProfiles', JSON.stringify(profiles));
+    localStorage.setItem('resqnetActiveProfileIdx', String(profiles.length - 1));
     setShowProfileSwitcher(false);
   };
 
   const switchProfile = (idx) => {
     setActiveProfileIdx(idx);
     setUserProfile(allProfiles[idx]);
-    localStorage.setItem('crisisSyncActiveProfileIdx', String(idx));
-    localStorage.setItem('crisisSyncProfile', JSON.stringify(allProfiles[idx]));
+    localStorage.setItem('resqnetActiveProfileIdx', String(idx));
+    localStorage.setItem('resqnetProfile', JSON.stringify(allProfiles[idx]));
     setShowProfileSwitcher(false);
   };
 
@@ -359,10 +370,8 @@ function AppContent() {
           className="flex items-center gap-2.5 cursor-pointer group" 
           onClick={() => setPortalMode('home')}
         >
-          <div className="w-[30px] h-[30px] bg-crisis rounded-[7px] overflow-hidden flex items-center justify-center text-[15px] shadow-lg shadow-crisis/20 group-hover:shadow-crisis/40 transition-shadow">
-            <img src="/logo.png" alt="ResQNet Logo" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-            <span className="hidden">🆘</span>
-          </div>
+          <Logo size={32} showText={false} />
+
           <span className="font-head text-[1.2rem] font-extrabold tracking-tight text-white">
             ResQNet
           </span>

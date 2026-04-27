@@ -1,4 +1,6 @@
 import React from 'react';
+import Logo from './Logo';
+
 
 export default function LandingPage({ onNavigate }) {
   return (
@@ -13,6 +15,8 @@ export default function LandingPage({ onNavigate }) {
             <span className="w-[5px] h-[5px] bg-crisis rounded-full animate-dot-pulse"></span>
             Real-Time Emergency Response
           </div>
+          
+          <Logo size={120} className="mb-8" />
           
           <h1 className="font-head text-[clamp(2.4rem,5vw,4.2rem)] font-extrabold leading-[1.06] tracking-tight mb-4 max-w-[760px]">
             Every Second Counts.<br/>
@@ -111,7 +115,7 @@ export default function LandingPage({ onNavigate }) {
       <div className="cta-glow bg-night-2 text-center py-20 px-6">
         <span className="text-[.68rem] font-semibold uppercase tracking-[.1em] text-crisis mb-2 block">Get Started</span>
         <h2 className="font-head text-[clamp(1.5rem,2.8vw,2.2rem)] font-bold tracking-tight leading-tight mb-3">Ready to Save Lives?</h2>
-        <p className="text-[var(--muted)] text-[.9rem] mb-7">Set up your profile and start using ResQNet AI now.</p>
+        <p className="text-[var(--muted)] text-[.9rem] mb-7">Set up your profile and start using ResQNet now.</p>
         <div className="flex gap-3 justify-center flex-wrap relative z-10">
           <button 
             onClick={() => onNavigate('citizen', 'sos')}
@@ -131,9 +135,9 @@ export default function LandingPage({ onNavigate }) {
       {/* ── FOOTER ── */}
       <footer className="bg-night border-t border-[var(--border)] py-6 px-6 flex items-center justify-between flex-wrap gap-3">
         <div className="font-head font-extrabold text-base">
-          ResQ<span className="text-crisis">Net</span> AI
+          ResQ<span className="text-crisis">Net</span>
         </div>
-        <p className="text-[.75rem] text-[var(--muted)]">© 2025 ResQNet AI · Smart SOS & Emergency Coordination Platform</p>
+        <p className="text-[.75rem] text-[var(--muted)]">© 2025 ResQNet · Smart SOS & Emergency Coordination Platform</p>
         <p className="text-[.72rem] text-[var(--muted2)]">Built for India's Urban & Rural Safety</p>
       </footer>
     </div>

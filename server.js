@@ -254,3 +254,5 @@ if (fs.existsSync(distPath)) {
 app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 ResQNet Backend running on port ${port} (0.0.0.0)`);
 });
+
+export default app;

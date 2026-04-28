@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Wifi, WifiOff, Globe, Sparkles, AlertTriangle, Heart, Flame, Brain, Droplets, Shield, Phone, ChevronRight } from 'lucide-react';
+import { Send, Wifi, WifiOff, Globe, Sparkles, AlertTriangle, Heart, Flame, Brain, Droplets, Shield, Phone, ChevronRight, Menu, BookOpen, X } from 'lucide-react';
 
 const LANGS = ['English','Hindi','Bengali','Tamil','Telugu','Punjabi'];
 
@@ -81,6 +81,7 @@ export default function AIAssistant() {
   const [messages, setMessages] = useState([{ role:'ai', text:'Welcome to ResQNet. I provide real-time, language-aware emergency instructions powered by Gemini AI.\n\nDescribe your emergency or choose a scenario from the right panel.' }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const chatEnd = useRef(null);
 
   useEffect(() => {
@@ -114,6 +115,7 @@ export default function AIAssistant() {
     const pack = OFFLINE_PACKS[name];
     setMessages(prev => [...prev, { role:'system', text: `Loading offline pack: ${pack.icon} ${name}` }]);
     if (lang !== 'English') translatePack(pack, lang);
+    setMobileSidebarOpen(false);
   };
 
   const sendMessage = async () => {
@@ -143,6 +145,7 @@ export default function AIAssistant() {
   const handleScenario = (sc) => {
     loadPack(sc.pack);
     setInput(sc.label);
+    setMobileSidebarOpen(false);
   };
 
   const currentPack = activePack ? OFFLINE_PACKS[activePack] : null;
@@ -165,8 +168,15 @@ export default function AIAssistant() {
             </select>
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${isOnline ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
               {isOnline ? <Wifi size={12}/> : <WifiOff size={12}/>}
-              {isOnline ? 'Online · Gemini' : 'Offline'}
+              {isOnline ? 'Online' : 'Offline'}
             </div>
+            {/* Mobile Sidebar Toggle */}
+            <button 
+              onClick={() => setMobileSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-lg bg-white/5 text-white hover:bg-white/10"
+            >
+              <BookOpen size={18} />
+            </button>
           </div>
         </div>
 
@@ -236,16 +246,32 @@ export default function AIAssistant() {
       </div>
 
       {/* ── Right Sidebar ── */}
-      <div className="w-[280px] border-l border-white/[.07] bg-[#0d0f14] overflow-y-auto hidden lg:block">
-        <div className="p-4 space-y-5">
+      <div className={`
+        fixed lg:static inset-0 z-50 lg:z-auto bg-[#0d0f14]/95 lg:bg-[#0d0f14] backdrop-blur-xl lg:backdrop-blur-none
+        w-full lg:w-[320px] transform transition-transform duration-300 lg:translate-x-0
+        ${mobileSidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
+        flex flex-col border-l border-white/[.07]
+      `}>
+        {/* Mobile Sidebar Header */}
+        <div className="lg:hidden flex items-center justify-between p-5 border-b border-white/[.07]">
+          <h2 className="font-head text-lg font-bold text-white flex items-center gap-2">
+            <BookOpen size={20} className="text-crisis" /> Emergency Resources
+          </h2>
+          <button onClick={() => setMobileSidebarOpen(false)} className="p-2 text-[var(--muted)] hover:text-white">
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-5 space-y-6">
           {/* Offline Packs */}
           <div>
-            <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest mb-3 flex items-center gap-1.5">🟠 Offline Instruction Packs</p>
-            <div className="space-y-1">
+            <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest mb-4 flex items-center gap-1.5">🟠 Offline Instruction Packs</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
               {Object.entries(OFFLINE_PACKS).map(([name, pack]) => (
                 <button key={name} onClick={() => loadPack(name)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-xs transition-all ${activePack === name ? 'bg-crisis/15 text-white border border-crisis/30' : 'text-slate-400 hover:bg-white/[.04] hover:text-white'}`}>
-                  <span>{pack.icon}</span><span>{name}</span>
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm transition-all border ${activePack === name ? 'bg-crisis/10 text-white border-crisis/30' : 'bg-white/[.02] border-transparent text-slate-400 hover:bg-white/[.06] hover:text-white'}`}>
+                  <span className="text-xl">{pack.icon}</span>
+                  <span className="font-semibold">{name}</span>
                 </button>
               ))}
             </div>
@@ -253,25 +279,26 @@ export default function AIAssistant() {
 
           {/* Quick Scenarios */}
           <div>
-            <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest mb-3 flex items-center gap-1.5">⚡ Quick Scenarios</p>
-            <div className="space-y-1">
+            <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest mb-4 flex items-center gap-1.5">⚡ Quick Scenarios</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
               {SCENARIOS.map((sc, i) => (
                 <button key={i} onClick={() => handleScenario(sc)}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-xs text-slate-400 hover:bg-white/[.04] hover:text-white transition-all">
-                  <span>{OFFLINE_PACKS[sc.pack]?.icon}</span><span>{sc.label}</span>
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm bg-white/[.02] border border-transparent text-slate-400 hover:bg-white/[.06] hover:text-white transition-all">
+                  <span className="opacity-70">{OFFLINE_PACKS[sc.pack]?.icon}</span>
+                  <span>{sc.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Emergency Numbers */}
-          <div>
-            <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest mb-3">Emergency Numbers 🇮🇳</p>
-            <div className="space-y-1.5">
+          <div className="pt-4">
+            <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest mb-4">Emergency Numbers 🇮🇳</p>
+            <div className="bg-white/[.03] rounded-2xl p-4 space-y-3">
               {EMERGENCY_NUMS.map((e, i) => (
-                <div key={i} className="flex justify-between items-center px-3 py-1.5 text-xs">
+                <div key={i} className="flex justify-between items-center text-xs">
                   <span className="text-slate-400">{e.label}</span>
-                  <span className="text-crisis font-bold font-mono">{e.num}</span>
+                  <a href={`tel:${e.num.split(' ')[0]}`} className="text-crisis font-bold font-mono hover:underline">{e.num}</a>
                 </div>
               ))}
             </div>

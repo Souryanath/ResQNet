@@ -6,6 +6,7 @@ import IncidentHistory from './components/IncidentHistory';
 import LandingPage from './components/LandingPage';
 import AIAssistant from './components/AIAssistant';
 import Logo from './components/Logo';
+import { Menu, X, Home, ShieldAlert, UserCircle, Bot, LayoutDashboard, FileBarChart } from 'lucide-react';
 
 
 class ErrorBoundary extends Component {
@@ -132,6 +133,7 @@ function AppContent() {
   const [citizenTab, setCitizenTab] = useState('sos');
   const [dispatcherTab, setDispatcherTab] = useState('map'); // 'map' or 'history'
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Feature II: Multi-user profile storage
   const [allProfiles, setAllProfiles] = useState(() => {
@@ -377,15 +379,15 @@ function AppContent() {
           </span>
         </div>
         
-        {/* Nav Tabs */}
-        <ul className="hidden md:flex gap-0 list-none">
+        {/* Nav Tabs - Desktop */}
+        <ul className="hidden md:flex gap-1 list-none">
           {[
-            { id: 'home', label: 'Home', icon: '' },
-            { id: 'citizen-sos', label: '🚨 SOS', action: () => { setPortalMode('citizen'); setCitizenTab('sos'); } },
-            { id: 'citizen-profile', label: '👤 Profile', action: () => { setPortalMode('citizen'); setCitizenTab('profile'); } },
-            { id: 'ai-assistant', label: '🤖 AI Assistant', action: () => setPortalMode('ai-assistant') },
-            { id: 'dispatcher', label: '💻 Dispatcher', action: () => { setPortalMode('dispatcher'); setDispatcherTab('map'); } },
-            { id: 'dispatcher-history', label: '📄 Reports', action: () => { setPortalMode('dispatcher'); setDispatcherTab('history'); } },
+            { id: 'home', label: 'Home', icon: <Home size={14} /> },
+            { id: 'citizen-sos', label: 'SOS', icon: <ShieldAlert size={14} />, action: () => { setPortalMode('citizen'); setCitizenTab('sos'); } },
+            { id: 'citizen-profile', label: 'Profile', icon: <UserCircle size={14} />, action: () => { setPortalMode('citizen'); setCitizenTab('profile'); } },
+            { id: 'ai-assistant', label: 'AI Assistant', icon: <Bot size={14} />, action: () => setPortalMode('ai-assistant') },
+            { id: 'dispatcher', label: 'Dispatcher', icon: <LayoutDashboard size={14} />, action: () => { setPortalMode('dispatcher'); setDispatcherTab('map'); } },
+            { id: 'dispatcher-history', label: 'Reports', icon: <FileBarChart size={14} />, action: () => { setPortalMode('dispatcher'); setDispatcherTab('history'); } },
           ].map(tab => {
             const isActive = tab.id === 'home' ? portalMode === 'home' :
               tab.id === 'ai-assistant' ? portalMode === 'ai-assistant' :
@@ -395,13 +397,17 @@ function AppContent() {
             return (
               <li key={tab.id}>
                 <button
-                  onClick={tab.action || (() => setPortalMode(tab.id))}
-                  className={`text-[.82rem] px-3 py-1.5 rounded-md transition-all cursor-pointer font-body ${
+                  onClick={() => {
+                    if (tab.action) tab.action();
+                    else setPortalMode(tab.id);
+                  }}
+                  className={`text-[.82rem] px-3 py-1.5 rounded-md transition-all cursor-pointer font-body flex items-center gap-2 ${
                     isActive 
-                      ? 'text-white bg-white/[.07]' 
+                      ? 'text-white bg-white/[.1] shadow-sm' 
                       : 'text-[var(--muted)] hover:text-white hover:bg-white/[.05]'
                   }`}
                 >
+                  {tab.icon}
                   {tab.label}
                 </button>
               </li>
@@ -452,8 +458,78 @@ function AppContent() {
               </div>
             )}
           </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden h-[30px] w-[30px] rounded-[7px] bg-card-2 border border-[var(--border)] flex items-center justify-center text-[var(--muted)] hover:text-white transition-all cursor-pointer"
+          >
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
-      </nav>
+
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div className="md:hidden fixed inset-0 top-[57px] bg-night/98 backdrop-blur-2xl z-[999] animate-fade-in flex flex-col p-6">
+            <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[.2em] mb-6">Navigation Menu</p>
+            <div className="flex flex-col gap-3">
+              {[
+                { id: 'home', label: 'Home Dashboard', icon: <Home size={20} />, action: () => setPortalMode('home') },
+                { id: 'citizen-sos', label: 'Emergency SOS', icon: <ShieldAlert size={20} className="text-red-500" />, action: () => { setPortalMode('citizen'); setCitizenTab('sos'); } },
+                { id: 'citizen-profile', label: 'Medical Profile', icon: <UserCircle size={20} />, action: () => { setPortalMode('citizen'); setCitizenTab('profile'); } },
+                { id: 'ai-assistant', label: 'AI First-Aid Assistant', icon: <Bot size={20} className="text-blue-400" />, action: () => setPortalMode('ai-assistant') },
+                { id: 'dispatcher', label: 'Dispatcher Hub', icon: <LayoutDashboard size={20} />, action: () => { setPortalMode('dispatcher'); setDispatcherTab('map'); } },
+                { id: 'dispatcher-history', label: 'Incident Reports', icon: <FileBarChart size={20} />, action: () => { setPortalMode('dispatcher'); setDispatcherTab('history'); } },
+              ].map(tab => {
+                const isActive = tab.id === 'home' ? portalMode === 'home' :
+                  tab.id === 'ai-assistant' ? portalMode === 'ai-assistant' :
+                  tab.id === 'dispatcher' ? (portalMode === 'dispatcher' && dispatcherTab === 'map') :
+                  tab.id === 'dispatcher-history' ? (portalMode === 'dispatcher' && dispatcherTab === 'history') :
+                  portalMode === 'citizen' && tab.id === `citizen-${citizenTab}`;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      tab.action();
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center gap-4 p-4 rounded-2xl transition-all border ${
+                      isActive 
+                        ? 'bg-white/[.08] border-white/10 text-white shadow-lg' 
+                        : 'bg-white/[.03] border-transparent text-[var(--muted)]'
+                    }`}
+                  >
+                    <div className={`${isActive ? 'text-white' : 'text-[var(--muted2)]'}`}>
+                      {tab.icon}
+                    </div>
+                    <span className="font-head font-bold text-base">{tab.label}</span>
+                    {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></div>}
+                  </button>
+                );
+              })}
+            </div>
+            
+            <div className="mt-auto pt-8 border-t border-white/5">
+              <div className="bg-card-2 border border-[var(--border)] rounded-2xl p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-crisis flex items-center justify-center text-sm font-bold text-white">
+                    {initials}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">{userProfile.name || 'Emergency Guest'}</p>
+                    <p className="text-[10px] text-[var(--muted)]">Active Profile</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => { setPortalMode('citizen'); setCitizenTab('profile'); setMobileMenuOpen(false); }}
+                  className="text-[10px] font-bold text-blue-400 uppercase tracking-wider bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20"
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       {/* ══ MAIN CONTENT ══ */}
       <main className="flex-grow flex relative" style={{ paddingTop: '57px' }}>

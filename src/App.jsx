@@ -477,13 +477,14 @@ function AppContent() {
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
+      </nav>
 
-        {/* Mobile Menu Overlay */}
-        {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 top-[57px] bg-[#0a0c10] z-[1000] animate-fade-in flex flex-col p-6 overflow-y-auto">
-            <div className="absolute inset-0 bg-gradient-to-b from-crisis/5 to-transparent pointer-events-none"></div>
-            <div className="relative z-10 flex flex-col min-h-full">
-              <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[.2em] mb-6">Navigation Menu</p>
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 top-[57px] bg-[#0a0c10] z-[1000] animate-fade-in flex flex-col p-6 overflow-y-auto">
+          <div className="absolute inset-0 bg-gradient-to-b from-crisis/5 to-transparent pointer-events-none"></div>
+          <div className="relative z-10 flex flex-col min-h-full">
+            <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[.2em] mb-6">Navigation Menu</p>
             <div className="flex flex-col gap-3">
               {[
                 { id: 'home', label: 'Home Dashboard', icon: <Home size={20} />, action: () => setPortalMode('home') },
@@ -540,10 +541,9 @@ function AppContent() {
                 </button>
               </div>
             </div>
-            </div>
           </div>
-        )}
-      </nav>
+        </div>
+      )}
 
       {/* ══ MAIN CONTENT ══ */}
       <main className="flex-grow flex relative" style={{ paddingTop: '57px' }}>

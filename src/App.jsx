@@ -530,6 +530,7 @@ function AppContent() {
             </div>
           </div>
         )}
+      </nav>
 
       {/* ══ MAIN CONTENT ══ */}
       <main className="flex-grow flex relative" style={{ paddingTop: '57px' }}>

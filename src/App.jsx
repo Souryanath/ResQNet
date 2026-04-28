@@ -134,6 +134,16 @@ function AppContent() {
   const [dispatcherTab, setDispatcherTab] = useState('map'); // 'map' or 'history'
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [mobileMenuOpen]);
   
   // Feature II: Multi-user profile storage
   const [allProfiles, setAllProfiles] = useState(() => {
@@ -470,8 +480,10 @@ function AppContent() {
 
         {/* Mobile Menu Overlay */}
         {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 top-[57px] bg-night/98 backdrop-blur-2xl z-[999] animate-fade-in flex flex-col p-6">
-            <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[.2em] mb-6">Navigation Menu</p>
+          <div className="md:hidden fixed inset-0 top-[57px] bg-[#0a0c10] z-[1000] animate-fade-in flex flex-col p-6 overflow-y-auto">
+            <div className="absolute inset-0 bg-gradient-to-b from-crisis/5 to-transparent pointer-events-none"></div>
+            <div className="relative z-10 flex flex-col min-h-full">
+              <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-[.2em] mb-6">Navigation Menu</p>
             <div className="flex flex-col gap-3">
               {[
                 { id: 'home', label: 'Home Dashboard', icon: <Home size={20} />, action: () => setPortalMode('home') },

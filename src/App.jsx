@@ -540,6 +540,7 @@ function AppContent() {
                 </button>
               </div>
             </div>
+            </div>
           </div>
         )}
       </nav>
